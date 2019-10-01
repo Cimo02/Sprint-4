@@ -1,8 +1,8 @@
 body {
-    color: #141414;
+    color: #2676d1;
 }
 
-h1{ 
+h1 { 
     text-align: center;
     font-size: 3.5em;
     text-shadow: #141414;
@@ -17,11 +17,14 @@ div {
 }
 
 button {
+    background-color: white;
+    border-color: #2676d1;
     border-radius: 4px;
     font-family: 'Times New Roman', Times, serif;
     font-size: 1.3em;
     height: 40px;
     width: 120px;
+    color: #2676d1;
 }
 
 canvas {
@@ -30,4 +33,10 @@ canvas {
     display: block;
     width: 1800px;
     height: 900px;
+}
+
+#poemTitle { 
+    position: absolute;
+    top: 5%;
+    left: 5%;
 }

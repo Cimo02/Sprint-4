@@ -51,15 +51,15 @@ function mainApp(args) {
      // createCircleBody(5,2)
 
       // 10 == 100% of canvas
-      createBoxBody(0,5,.05,10) // leftwall
-      createBoxBody(5,0,10,.05) // ceiling
-      createBoxBody(10,5,.05,10) // right wall
-      createBoxBody(5,5,10,.05) // floor
-
+      createBoxBody(0,5,0,10) // leftwall
+      createBoxBody(5,0,10,0) // ceiling
+      createBoxBody(10,5,0,10) // right wall
+      createBoxBody(5,5,10,0) // floor
+      
       //createBoxBody(5,5,1,1) // box
 
-      //createBoxBody(2,7,.2,7,100) // left diagonal
-      //createBoxBody(8,7,.2,7,-100) // right diagonal
+      createBoxBody(3,3.5,.1,7,140) // left diagonal
+      createBoxBody(7,1.5,.1,7, -140) // right diagonal
       circle = new box2d.b2CircleShape(1);
 
       var vertices = [
@@ -78,7 +78,7 @@ function mainApp(args) {
       pgd.strength=.2
       
       pgd.color.Set(0, 255, 0, 255)
-      world.GetParticleSystemList().SetRadius(.05);
+      world.GetParticleSystemList().SetRadius(.15);
       partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd);
       
       requestAnimationFrame(gameLoop);

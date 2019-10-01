@@ -1,6 +1,9 @@
 
 
 function Renderer(world,ctx) {
+    var poem = "Everything on the earth bristled, the bramble, pricked and the green thread, nibbled away, the petal fell, falling, until the only flower was the falling itself. Water is another matter, has no direction but its own bright grace, runs through all imaginable colors, takes limpid lessons, from stone, and in those functionings plays out, the unrealized ambitions of the foam.";
+    var poemWords = poem.split(" ");
+    console.log(poemWords); // just to check
     var canvas=document.getElementById("ballCanvas");
     var ctx=canvas.getContext("2d");
     const SCALE = canvas.width/10
@@ -27,20 +30,22 @@ function Renderer(world,ctx) {
         const newRadius = radius*SCALE;
         const x = pos.x*SCALE;
         const y = pos.y*SCALE;
-
         ctx.moveTo(x + newRadius, y);
-        ctx.fillStyle = "#479dff";
+        ctx.fillStyle = "#2676d1";
+
+        if (poemWords[index] == null) return; // don't create a circle because there's no word.
+
         ctx.beginPath();
     
-        ctx.arc(x,y,newRadius, 0,2*Math.PI);
+        ctx.arc(x,y, newRadius, 0,2*Math.PI);
        
-        ctx.fill();
+        //ctx.fill();
         ctx.strokeStyle = "#2676d1";
-        ctx.stroke();
+        //ctx.stroke();
          
         // index label
-        //ctx.font = '12px serif';
-        //ctx.strokeText(index, x, y);
+        ctx.font = '16px serif';
+        ctx.fillText(poemWords[index], x, y);
   
          ctx.closePath();
     }
