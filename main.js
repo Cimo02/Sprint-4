@@ -61,6 +61,15 @@ function mainApp(args) {
       //createBoxBody(2,7,.2,7,100) // left diagonal
       //createBoxBody(8,7,.2,7,-100) // right diagonal
       circle = new box2d.b2CircleShape(1);
+
+      var vertices = [
+        new box2d.b2Vec2(2, 2),
+        new box2d.b2Vec2(-2, 2),
+        new box2d.b2Vec2(-2, -2),
+        new box2d.b2Vec2(2, -2),
+      ];
+      square = new box2d.b2PolygonShape(vertices, 4);
+
       pgd = new box2d.b2ParticleGroupDef();
       pgd.position= new box2d.b2Vec2(5,1)
       pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
@@ -148,7 +157,7 @@ function mainApp(args) {
       var body = world.CreateBody(bd);
       fixtureDef = body.CreateFixture(circle, 0.5);
       fixtureDef.userData = {type: "circle"}
-      fixtureDef.SetRestitution(.5)
+      fixtureDef.SetRestitution(0.5);
   }
   
   function createBoxBody(x,y,width,height, angle = 0){
