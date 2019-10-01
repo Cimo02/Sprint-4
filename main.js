@@ -49,34 +49,34 @@ function mainApp(args) {
       Renderer = new Renderer(world)
      // createCircleBody(4.9,.8)
      // createCircleBody(5,2)
-  
-      createBoxBody(0,5,.1,10) // leftwall
-      createBoxBody(5,0,10,.1) // to
-      createBoxBody(10,5,.1,10) // right wall
-      createBoxBody(5,10,10,.1)
-      createBoxBody(5,5,1,1)
 
-      createBoxBody(2,7,.2,7,100)
-      createBoxBody(8,7,.2,7,-100)
-      circle = new box2d.b2CircleShape(.7)
+      // 10 == 100% of canvas
+      createBoxBody(0,5,.05,10) // leftwall
+      createBoxBody(5,0,10,.05) // ceiling
+      createBoxBody(10,5,.05,10) // right wall
+      createBoxBody(5,5,10,.05) // floor
+
+      //createBoxBody(5,5,1,1) // box
+
+      //createBoxBody(2,7,.2,7,100) // left diagonal
+      //createBoxBody(8,7,.2,7,-100) // right diagonal
+      circle = new box2d.b2CircleShape(1);
       pgd = new box2d.b2ParticleGroupDef();
-      pgd.position=new box2d.b2Vec2(5,1)
-      pgd.flags = box2d.b2ParticleFlag.b2_elasticParticle;
-      pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup
+      pgd.position= new box2d.b2Vec2(5,1)
+      pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
+      pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
       pgd.shape = circle;
       pgd.strength=.2
       
       pgd.color.Set(0, 255, 0, 255)
-      world.GetParticleSystemList().SetRadius(.15)
+      world.GetParticleSystemList().SetRadius(.05);
       partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd);
       
       requestAnimationFrame(gameLoop);
   
-  
       document.addEventListener('keyup', (event) => {
         jumping = false
       })    
-
 
       document.addEventListener('keydown', (event) => {
         if (jumping) return   
@@ -100,8 +100,6 @@ function mainApp(args) {
           return particleSystem.GetPositionBuffer()[index]
         })
         
-
-
         let distancePoints = []
         for (var i=0;i<touchingParticlePoints.length;i++){
           distancePoints.push(box2d.b2Distance(oppositeBodyPoints[i],
@@ -116,7 +114,6 @@ function mainApp(args) {
             if (!dp) dp =.5 // on the odd chance it is 14, they have the same point. Fucking ignore it.
             const multiple = .7/dp
 
-
             console.log(multiple)
             const impulse = particleNormals[particleIndex].SelfMul(multiple) // equals the normalized vector * the distance
             
@@ -129,7 +126,6 @@ function mainApp(args) {
     
         });
   
-  
   var listener = new box2d.b2ContactListener;
   
   listener.BeginContact = function(contact) {
@@ -139,9 +135,7 @@ function mainApp(args) {
   
   world.SetContactListener(listener)
   
-  
   }
-  
   
   function createCircleBody(x,y){
       var bd = new box2d.b2BodyDef();
@@ -158,7 +152,6 @@ function mainApp(args) {
   }
   
   function createBoxBody(x,y,width,height, angle = 0){
-      
       // Create our body definition
       var groundBodyDef = new box2d.b2BodyDef();  
       // Set its world position
@@ -194,37 +187,28 @@ function mainApp(args) {
       return new box2d.b2ParticleBodyContact();
     });
      
-      world.Step(1/40,10,10)
-      getTouchingParticles()
+      world.Step(1/40,10,10);
+      getTouchingParticles();
 
-      Renderer.render()
-
-
-  
-      
+      Renderer.render();
   }
 
   function getTouchingParticles(){
-      particleNormals = {}
-    const system = world.GetParticleSystemList()
-    bodyContacts = system.GetBodyContacts()
-   const contacts  = bodyContacts.filter(particle => {
-     return particle.body
+    particleNormals = {};
+    const system = world.GetParticleSystemList();
+    bodyContacts = system.GetBodyContacts();
+    const contacts  = bodyContacts.filter(particle => {
+      return particle.body;
    })
 
-   
    bodyContacts.forEach(contact => {
        particleNormals[contact.index] = contact.normal
    })
-
-
 
    contacts.forEach(contact => {
      touchingParticles.push(contact.index)
     });
   }
-  
-  
   
   onload();
 }

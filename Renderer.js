@@ -17,34 +17,32 @@ function Renderer(world,ctx) {
         this.drawParticleSystem()
         ctx.stroke();
     }
-
     
     this.draw = function(fixture, transform){
         if (fixture.userData.type == "circle") return this.drawCircle(fixture.GetShape().m_radius, transform.p, fixture.color || "black")
         if (fixture.userData.type == "square") return this.drawPolygon(fixture, transform)
     }
     
-    this.drawCircle = function(radius, pos, color, index = " "){
-        const newRadius = radius*SCALE
-        const x = pos.x*SCALE
-        const y = pos.y*SCALE
-        ctx.moveTo(x + newRadius, y)
-        //ctx.fillStyle = "white"
-        ctx.strokeStyle= color
-         ctx.beginPath()
+    this.drawCircle = function(radius, pos, color, index = " ") {
+        const newRadius = radius*SCALE;
+        const x = pos.x*SCALE;
+        const y = pos.y*SCALE;
+
+        ctx.moveTo(x + newRadius, y);
+        ctx.fillStyle = "#479dff";
+        ctx.beginPath();
     
         ctx.arc(x,y,newRadius, 0,2*Math.PI);
        
-        // ctx.fill()
-        ctx.strokeStyle= "grey"
-         ctx.stroke();
+        ctx.fill();
+        ctx.strokeStyle = "#2676d1";
+        ctx.stroke();
          
+        // index label
+        //ctx.font = '12px serif';
+        //ctx.strokeText(index, x, y);
   
-         ctx.font = '12px serif';
-         ctx.strokeText(index, x, y);
-  
-  
-         ctx.closePath()
+         ctx.closePath();
     }
     
     this.drawPolygon = function(fixture, transform){
