@@ -24,7 +24,7 @@ div {
     margin-left: 5%;
 }
 
-button {
+#startButton {
     font-family: 'Dosis', sans-serif;
     font-weight: 700;
     background-color: #ffffff00;
@@ -34,6 +34,9 @@ button {
     height: 80px;
     width: 240px;
     color: #ffffff;
+    position: absolute;
+    left:75%;
+    top: 50%;
 }
 
 canvas {
@@ -42,6 +45,7 @@ canvas {
     display: block;
     width: 1800px;
     height: 900px;
+    border-radius: 15px;
 }
 
 #poemTitle { 
@@ -56,4 +60,15 @@ canvas {
     color: white;
     margin-left: 5%;
     margin-top: 75px;
+}
+
+select {
+    position: absolute;
+    top: 5%;
+    height: 25px;
+    width:80px;
+    left: 6%;
+    background-color: #ffffff00;
+    font-family: 'Dosis', sans-serif;
+    font-weight: 600;
 }

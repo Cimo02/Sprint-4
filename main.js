@@ -40,12 +40,12 @@ let touchingParticles = []
 let particleNormals = {}
 let image = document.getElementById('splashBg');
 let frames = 0;
-let simulation = "splash";
+let simulation = 'splash';
+let counter = 0;
 
 function mainApp(args) {
 
   function onload() {
-  
       var gravity = new box2d.b2Vec2(0, 10);
       world = new box2d.b2World(gravity);
       var particleSystemDef = new box2d.b2ParticleSystemDef();
@@ -69,7 +69,7 @@ function mainApp(args) {
           makeSprinkle();
           break;
         case 'bloop':
-          makeSprinkle();
+          makeBloop();
           break;
         case 'drip':
           makeDrip();
@@ -78,7 +78,7 @@ function mainApp(args) {
           makeSpray();
           break;
         default:
-          makeSpray();
+          makeSplash();
           break;
       }
 
@@ -100,7 +100,6 @@ function mainApp(args) {
       */
 
       requestAnimationFrame(gameLoop);
-  
   
       var listener = new box2d.b2ContactListener;
   
@@ -166,6 +165,21 @@ function mainApp(args) {
       getTouchingParticles();
 
       Renderer.render(image);
+
+      if (simulation === 'drip' && counter === 60) {
+        counter = 0;
+        makeDrip();
+      } 
+      else if (simulation === 'bloop' && counter === 300) {
+        counter = 0;
+        makeBlooper();
+      }
+      else if (simulation === 'sprinkle' && counter === 15) {
+        counter = 0;
+        makeSprinkle();
+      }
+
+      counter++;
   }
 
   function getTouchingParticles(){
@@ -208,55 +222,111 @@ function mainApp(args) {
 
   // fills the bottom with particles and drops a cube into it
   function makeBloop() {
-    /* create splash cube
+    image = document.getElementById('bloop');
+    // create container
+    createBoxBody(2,4,.1,7,150); // left diagonal
+    createBoxBody(8,4,.1,7, -150); // right diagonal
+
+    // create water
+    var circle = new box2d.b2CircleShape(1.5);
+    var pgd = new box2d.b2ParticleGroupDef();
+    pgd.position = new box2d.b2Vec2(5,3);
+    pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
+    pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
+    pgd.shape = circle;
+    pgd.strength = 0.2;
+      
+    pgd.color.Set(0, 255, 0, 255);
+    world.GetParticleSystemList().SetRadius(.09);
+    var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd); 
+  }
+
+  function makeBlooper(){
+    // create splash cube
     var box = new box2d.b2PolygonShape();
+    box.SetAsBox(0.3,0.3);
     var pgdBox = new box2d.b2ParticleGroupDef();
-    pgdBox.position = new box2d.b2Vec2(5,1);
+    pgdBox.position = new box2d.b2Vec2(5,-1);
     pgdBox.flags = box2d.b2ParticleFlag.b2_dynamicBody;
-    pgdBox.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
+    pgdBox.groupFlags = box2d.b2ParticleGroupFlag.b2_rigidParticleGroup;
     pgdBox.shape = box;
-    pgdBox.strength= 0.2;
-    */
+    pgdBox.strength= 1;
+    
+    var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgdBox); 
   }
 
   // spawns three particles each time called every third frame? 
   function makeSprinkle() {
     image = document.getElementById('sprinkle');
+
+    var random = Math.floor(Math.random() * (+9 - +1)) + +0; 
+
     // create container
     createBoxBody(3,4.5,.1,7,140); // left diagonal
     createBoxBody(7,4.5,.1,7, -140); // right diagonal
 
     // create water
-    var circle = new box2d.b2CircleShape(0.5);
+    var circle = new box2d.b2CircleShape(0.05);
     var pgd = new box2d.b2ParticleGroupDef();
-    pgd.position = new box2d.b2Vec2(5,-1);
+    pgd.position = new box2d.b2Vec2(random,-1);
     pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
     pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
     pgd.shape = circle;
-    pgd.strength = 0.0;
+    pgd.strength = 0.2;
       
     pgd.color.Set(0, 255, 0, 255);
-    world.GetParticleSystemList().SetRadius(.05);
+    world.GetParticleSystemList().SetRadius(.08);
     var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd); 
   }
 
   // spawns two of the same particle groups in top of eachother so they 'explode'
   function makeSpray(){
+    image = document.getElementById('spray');
+    createBoxBody(5,0,10,0) // ceiling
+
     for (var i = 0; i < 2; i++){
       // create water
-      var circle = new box2d.b2CircleShape(1.5);
+      var circle = new box2d.b2CircleShape(1);
       var pgd = new box2d.b2ParticleGroupDef();
-      pgd.position = new box2d.b2Vec2(5,-1);
+      pgd.position = new box2d.b2Vec2(5,2);
       pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
       pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
       pgd.shape = circle;
-      pgd.strength = 0.0;
+      pgd.strength = 0.2;
       
       pgd.color.Set(0, 255, 0, 255);
-      world.GetParticleSystemList().SetRadius(.08);
+      world.GetParticleSystemList().SetRadius(.06);
       var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd); 
     }
   }
-  
+
+  // spawns a single particle above the canvas, drops one particle on a counter
+  function makeDrip() {
+    image = document.getElementById('drip');
+    // create container
+    createBoxBody(3,4.5,.1,7,140); // left diagonal
+    createBoxBody(7,4.5,.1,7, -140); // right diagonal
+
+    // create water
+    var circle = new box2d.b2CircleShape(0.1);
+    var pgd = new box2d.b2ParticleGroupDef();
+    pgd.position = new box2d.b2Vec2(5,-1);
+    pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
+    pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
+    pgd.shape = circle;
+    pgd.strength = 0.2;
+      
+    pgd.color.Set(0, 255, 0, 255);
+    world.GetParticleSystemList().SetRadius(.08);
+    var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd); 
+  }
+
+  function reloadSimulation() {
+    var simSelect = document.getElementById('simSelect');
+    simulation = simSelect.nodeValue;
+
+    onload();
+  } 
+
   onload();
 }

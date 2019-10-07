@@ -83,6 +83,14 @@
 <body onload="mainApp()">
 	<canvas id="ballCanvas" width="1800" height="900"></canvas>
 
+	<select id="simSelect" class="custom-select" onchange="reloadSimulation()">
+		<option value="splash" selected>Splash</option>
+		<option value="spray">Spray</option>
+		<option value="sprinkle">Sprinkle</option>
+		<option value="bloop">Bloop</option>
+		<option value="drip">Drip</option>
+	</select>
+
 	<div style="display: none;">
 		<img src="media/splash.png" id="splash"/>
 		<img src="media/bloop.png" id="bloop"/>
