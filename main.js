@@ -27,7 +27,7 @@
  * There are no graphics for this example. Box2D is meant to be
  * used with your rendering engine in your game engine.
  */
-
+"use strict"
 /**
  * @export
  * @return {number}
@@ -38,6 +38,10 @@ let world
 let jumping = false;
 let touchingParticles = []
 let particleNormals = {}
+let image = document.getElementById('splashBg');
+let frames = 0;
+let simulation = "splash";
+
 function mainApp(args) {
 
   function onload() {
@@ -52,23 +56,36 @@ function mainApp(args) {
 
       // 10 == 100% of canvas
       createBoxBody(0,5,0,10) // leftwall
-      createBoxBody(5,0,10,0) // ceiling
+      //createBoxBody(5,0,10,0) // ceiling
       createBoxBody(10,5,0,10) // right wall
       createBoxBody(5,5,10,0) // floor
-      
-      //createBoxBody(5,5,1,1) // box
 
-      createBoxBody(3,3.5,.1,7,140) // left diagonal
-      createBoxBody(7,1.5,.1,7, -140) // right diagonal
+      // check for which simulation is selected here and rerun onload to reload sim
+      switch (simulation){
+        case 'splash':
+          makeSplash();
+          break;
+        case 'sprinkle':
+          makeSprinkle();
+          break;
+        case 'bloop':
+          makeSprinkle();
+          break;
+        case 'drip':
+          makeDrip();
+          break;
+        case 'spray':
+          makeSpray();
+          break;
+        default:
+          makeSpray();
+          break;
+      }
+
+      /*
+      createBoxBody(3,4.5,.1,7,140) // left diagonal
+      createBoxBody(7,4.5,.1,7, -140) // right diagonal
       circle = new box2d.b2CircleShape(1);
-
-      var vertices = [
-        new box2d.b2Vec2(2, 2),
-        new box2d.b2Vec2(-2, 2),
-        new box2d.b2Vec2(-2, -2),
-        new box2d.b2Vec2(2, -2),
-      ];
-      square = new box2d.b2PolygonShape(vertices, 4);
 
       pgd = new box2d.b2ParticleGroupDef();
       pgd.position= new box2d.b2Vec2(5,1)
@@ -78,84 +95,33 @@ function mainApp(args) {
       pgd.strength=.2
       
       pgd.color.Set(0, 255, 0, 255)
-      world.GetParticleSystemList().SetRadius(.15);
+      world.GetParticleSystemList().SetRadius(.08);
       partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd);
-      
+      */
+
       requestAnimationFrame(gameLoop);
   
-      document.addEventListener('keyup', (event) => {
-        jumping = false
-      })    
-
-      document.addEventListener('keydown', (event) => {
-        if (jumping) return   
-        jumping = true;
-          const lastIndex = partgroup.m_lastIndex - 1
-          const firstIndex = partgroup.m_firstIndex
-          const length = lastIndex-firstIndex
-          const particleSystem = world.GetParticleSystemList()
-          //const vecFirst = world.GetParticleSystem().GetParticlePositionBuffer()[firstIndex]
-          //const vecLast= world.GetParticleSystem().GetParticlePositionBuffer()[lastIndex]
-          //const newVec = new box2d.b2Vec2(vecFirst.x-vecLast.x, vecFirst.y-vecLast.y).Multiply(5)
-          newVec = new box2d.b2Vec2(0,-10)
-
-        // get contacting bodies
-        oppositeBodyPoints = touchingParticles.map(particle => {
-          return particleSystem.GetPositionBuffer()[28-particle]
-           
-        })
-
-        touchingParticlePoints = touchingParticles.map(index=>{
-          return particleSystem.GetPositionBuffer()[index]
-        })
-        
-        let distancePoints = []
-        for (var i=0;i<touchingParticlePoints.length;i++){
-          distancePoints.push(box2d.b2Distance(oppositeBodyPoints[i],
-                                touchingParticlePoints[i]
-                                 ))
-        }
-
-        for (var i=0; i< distancePoints.length; i++){
-
-            let particleIndex = touchingParticles[i]
-            let dp = -distancePoints[i]
-            if (!dp) dp =.5 // on the odd chance it is 14, they have the same point. Fucking ignore it.
-            const multiple = .7/dp
-
-            console.log(multiple)
-            const impulse = particleNormals[particleIndex].SelfMul(multiple) // equals the normalized vector * the distance
-            
-            particleSystem.ParticleApplyLinearImpulse(
-                particleIndex,
-                impulse // doesn't this mean it's going up by less the shorter it is, isn't that the opposite of what we want? oh well,
-             ) // For now, just apply straight up
-            
-        }   
-    
-        });
   
-  var listener = new box2d.b2ContactListener;
+      var listener = new box2d.b2ContactListener;
   
-  listener.BeginContact = function(contact) {
-      var fixtureA=contact.GetFixtureA();
-      var fixtureB=contact.GetFixtureB()
-  }
+      listener.BeginContact = function(contact) {
+        var fixtureA=contact.GetFixtureA();
+        var fixtureB=contact.GetFixtureB()
+      }
   
-  world.SetContactListener(listener)
-  
+      world.SetContactListener(listener);
   }
   
   function createCircleBody(x,y){
       var bd = new box2d.b2BodyDef();
       // circle
-      bd = new box2d.b2BodyDef()
+      var bd = new box2d.b2BodyDef()
       bd.userData = {circle: true}
-      circle = new box2d.b2CircleShape(.1);
+      var circle = new box2d.b2CircleShape(.1);
       bd.type = box2d.b2Body.box2d.b2_dynamicBody;
-      bd.position.Set(x,y)
+      bd.position.Set(x,y);
       var body = world.CreateBody(bd);
-      fixtureDef = body.CreateFixture(circle, 0.5);
+      var fixtureDef = body.CreateFixture(circle, 0.5);
       fixtureDef.userData = {type: "circle"}
       fixtureDef.SetRestitution(0.5);
   }
@@ -175,11 +141,11 @@ function mainApp(args) {
       // (setAsBox takes half-width and half-height as arguments)
       groundBox.SetAsBox(width/2,height/2,new box2d.b2Vec2(0,0),angle);
       // Create a fixture from our polygon shape and add it to our ground body  
-      fixtureDef = groundBody.CreateFixture(groundBox, 0.0);
+      var fixtureDef = groundBody.CreateFixture(groundBox, 0.0);
       fixtureDef.userData = {type: "square"} 
   }
   
-  lastFrame = new Date().getTime();
+  let lastFrame = new Date().getTime();
   
   const gameLoop = function() {
       var tm = new Date().getTime();
@@ -199,13 +165,13 @@ function mainApp(args) {
       world.Step(1/40,10,10);
       getTouchingParticles();
 
-      Renderer.render();
+      Renderer.render(image);
   }
 
   function getTouchingParticles(){
     particleNormals = {};
     const system = world.GetParticleSystemList();
-    bodyContacts = system.GetBodyContacts();
+    var bodyContacts = system.GetBodyContacts();
     const contacts  = bodyContacts.filter(particle => {
       return particle.body;
    })
@@ -217,6 +183,79 @@ function mainApp(args) {
    contacts.forEach(contact => {
      touchingParticles.push(contact.index)
     });
+  }
+
+  // drops a large circle of particles on to the canvas
+  function makeSplash() {
+    image = document.getElementById('splash');
+    // create container
+    createBoxBody(2,4,.1,7,150); // left diagonal
+    createBoxBody(8,4,.1,7, -150); // right diagonal
+
+    // create water
+    var circle = new box2d.b2CircleShape(1.5);
+    var pgd = new box2d.b2ParticleGroupDef();
+    pgd.position = new box2d.b2Vec2(5,-1);
+    pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
+    pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
+    pgd.shape = circle;
+    pgd.strength = 0.0;
+      
+    pgd.color.Set(0, 255, 0, 255);
+    world.GetParticleSystemList().SetRadius(.09);
+    var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd); 
+  }
+
+  // fills the bottom with particles and drops a cube into it
+  function makeBloop() {
+    /* create splash cube
+    var box = new box2d.b2PolygonShape();
+    var pgdBox = new box2d.b2ParticleGroupDef();
+    pgdBox.position = new box2d.b2Vec2(5,1);
+    pgdBox.flags = box2d.b2ParticleFlag.b2_dynamicBody;
+    pgdBox.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
+    pgdBox.shape = box;
+    pgdBox.strength= 0.2;
+    */
+  }
+
+  // spawns three particles each time called every third frame? 
+  function makeSprinkle() {
+    image = document.getElementById('sprinkle');
+    // create container
+    createBoxBody(3,4.5,.1,7,140); // left diagonal
+    createBoxBody(7,4.5,.1,7, -140); // right diagonal
+
+    // create water
+    var circle = new box2d.b2CircleShape(0.5);
+    var pgd = new box2d.b2ParticleGroupDef();
+    pgd.position = new box2d.b2Vec2(5,-1);
+    pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
+    pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
+    pgd.shape = circle;
+    pgd.strength = 0.0;
+      
+    pgd.color.Set(0, 255, 0, 255);
+    world.GetParticleSystemList().SetRadius(.05);
+    var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd); 
+  }
+
+  // spawns two of the same particle groups in top of eachother so they 'explode'
+  function makeSpray(){
+    for (var i = 0; i < 2; i++){
+      // create water
+      var circle = new box2d.b2CircleShape(1.5);
+      var pgd = new box2d.b2ParticleGroupDef();
+      pgd.position = new box2d.b2Vec2(5,-1);
+      pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
+      pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
+      pgd.shape = circle;
+      pgd.strength = 0.0;
+      
+      pgd.color.Set(0, 255, 0, 255);
+      world.GetParticleSystemList().SetRadius(.08);
+      var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd); 
+    }
   }
   
   onload();
