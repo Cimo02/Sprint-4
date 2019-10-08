@@ -50,13 +50,13 @@ function mainApp(args) {
       world = new box2d.b2World(gravity);
       var particleSystemDef = new box2d.b2ParticleSystemDef();
       world.CreateParticleSystem(particleSystemDef);
-      Renderer = new Renderer(world)
-     // createCircleBody(4.9,.8)
-     // createCircleBody(5,2)
+      Renderer = new Renderer(world);
+      
+      simulation = localStorage.getItem("simulation", simulation);
+      document.getElementById('simSelect').value = simulation;
 
       // 10 == 100% of canvas
       createBoxBody(0,5,0,10) // leftwall
-      //createBoxBody(5,0,10,0) // ceiling
       createBoxBody(10,5,0,10) // right wall
       createBoxBody(5,5,10,0) // floor
 
@@ -209,7 +209,7 @@ function mainApp(args) {
     // create water
     var circle = new box2d.b2CircleShape(1.5);
     var pgd = new box2d.b2ParticleGroupDef();
-    pgd.position = new box2d.b2Vec2(5,-1);
+    pgd.position = new box2d.b2Vec2(5,-4);
     pgd.flags = box2d.b2ParticleFlag.b2_dynamicBody;
     pgd.groupFlags = box2d.b2ParticleGroupFlag.b2_solidParticleGroup;
     pgd.shape = circle;
@@ -321,12 +321,13 @@ function mainApp(args) {
     var partgroup = world.GetParticleSystemList().CreateParticleGroup(pgd); 
   }
 
-  function reloadSimulation() {
-    var simSelect = document.getElementById('simSelect');
-    simulation = simSelect.nodeValue;
-
-    onload();
-  } 
-
   onload();
+}
+
+function reloadSimulation() { 
+  simulation = document.getElementById('simSelect').value;
+  localStorage.setItem("simulation", simulation);
+
+  document.location.reload(true)
+  //mainApp();
 }
