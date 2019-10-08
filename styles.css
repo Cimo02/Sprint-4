@@ -65,10 +65,18 @@ canvas {
 select {
     position: absolute;
     top: 5%;
-    height: 25px;
-    width:80px;
-    left: 6%;
+    left: 45%;   
+    height: 55px;
+    width:180px;
     background-color: #ffffff00;
     font-family: 'Dosis', sans-serif;
     font-weight: 600;
+    font-size: 2em;
+    color: white;
+    border-color: white;
+}
+
+option {
+    color: white;
+    font-size: 2em;
 }
